@@ -1,0 +1,20 @@
+services:
+
+  # Service API — basé sur le Dockerfile du TP02
+  api:
+    build:
+      context: ../TP02          # Dossier contenant le Dockerfile
+      dockerfile: Dockerfile
+    deploy:
+      replicas: 4               # Lance 4 containers identiques
+    # Pas de "ports" ici ! L'API n'est PAS accessible depuis l'hôte directement
+
+  # Reverse proxy nginx — seul exposé sur l'hôte
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"               # Port 8080 de ton PC → port 80 du container nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro   # Monte ta config dans nginx
+    depends_on:
+      - api                     # Attend que l'API soit prête avant de démarrer
